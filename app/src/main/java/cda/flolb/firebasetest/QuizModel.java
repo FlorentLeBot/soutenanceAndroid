@@ -12,7 +12,6 @@ public class QuizModel {
     public List<Country> randomCountries;
     public boolean timerRunning = false;
     public long timeLeftInMillis = TIME_LIMIT;
-
     public void incrementScore() {
         this.score++;
     }

@@ -88,7 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/round_back_white_stroke2"
         android:textAllCaps="false"
@@ -101,7 +101,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/round_back_white_stroke2"
         android:textAllCaps="false"
@@ -113,7 +113,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/round_back_white_stroke2"
         android:textAllCaps="false"
@@ -125,12 +125,37 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/round_back_white_stroke2"
         android:textAllCaps="false"
         android:textColor="@color/black"
         android:text="Option 4"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/option5"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/round_back_white_stroke2"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:text="Option 5"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/option6"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/round_back_white_stroke2"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:text="Option 6"/>
+
 
 
     <androidx.appcompat.widget.AppCompatButton
