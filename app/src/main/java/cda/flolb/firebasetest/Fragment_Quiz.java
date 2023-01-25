@@ -9,13 +9,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -95,14 +99,14 @@ public class Fragment_Quiz extends Fragment {
                     nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                                nextQuestion();
-                            }
+                            nextQuestion();
+                        }
                     });
                 } else {
                     Toast.makeText(getContext(), "Une erreur s'est produite lors de la récupération des données.", Toast.LENGTH_SHORT).show();
                 }
-                startTimer();
             }
+
             @Override
             public void onFailure(Call<List<Country>> call, Throwable t) {
                 Toast.makeText(getContext(), "Error getting data", Toast.LENGTH_SHORT).show();
@@ -114,6 +118,22 @@ public class Fragment_Quiz extends Fragment {
     //----------------------------------------------------------------------------------------------
 
     private void setQuestion() {
+        startTimer();
+        correctCountryName = mQuizModel.randomCountries.get(currentQuestion).getTranslations().getFra().getCommon();
+        List<String> capitalNames = new ArrayList<>();
+        for (Country country : mQuizModel.randomCountries) {
+            capitalNames.add(country.getTranslations().getFra().getCommon());
+        }
+        Collections.shuffle(capitalNames);
+        for (int i = 0; i < 6; i++) {
+            buttons[i].setText(capitalNames.get(i));
+        }
+        questions.setText("Question " + (currentQuestion + 1) + "/" + totalQuestions);
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    private void startTimer() {
         if (!timerRunning) {
             timer = new CountDownTimer(timeLeftInMillis, 1000) {
                 @Override
@@ -130,33 +150,6 @@ public class Fragment_Quiz extends Fragment {
             }.start();
             timerRunning = true;
         }
-        correctCountryName = mQuizModel.randomCountries.get(currentQuestion).getTranslations().getFra().getCommon();
-        List<String> capitalNames = new ArrayList<>();
-        for (Country country : mQuizModel.randomCountries) {
-            capitalNames.add(country.getTranslations().getFra().getCommon());
-        }
-        Collections.shuffle(capitalNames);
-        for (int i = 0; i < 6; i++) {
-            buttons[i].setText(capitalNames.get(i));
-        }
-        questions.setText("Question " + (currentQuestion + 1) + "/" + totalQuestions);
-    }
-
-    //----------------------------------------------------------------------------------------------
-
-    private void startTimer() {
-        timer = new CountDownTimer(QuizModel.TIME_LIMIT, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                mQuizModel.timeLeftInMillis = millisUntilFinished;
-                updateTimerText();
-            }
-            @Override
-            public void onFinish() {
-                mQuizModel.timerRunning = false;
-            }
-        }.start();
-        mQuizModel.timerRunning = true;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -181,6 +174,7 @@ public class Fragment_Quiz extends Fragment {
                 timeLeftInMillis = millisUntilFinished;
                 updateTimerText();
             }
+
             @Override
             public void onFinish() {
                 timerRunning = false;
@@ -210,7 +204,7 @@ public class Fragment_Quiz extends Fragment {
             resetButtons();
             resetTimer();
             nextQuestionBtn.setVisibility(View.INVISIBLE);
-            questions.setText("Question " + (currentQuestion + 1) + "/" + totalQuestions);
+            questions.setText("Question :" + (currentQuestion + 1) + "/" + totalQuestions);
             String flagUrl = mQuizModel.randomCountries.get(currentQuestion).getFlags().get(1);
             Glide.with(getContext()).load(flagUrl).into(flagImageView);
             updateButtons();
@@ -250,7 +244,7 @@ public class Fragment_Quiz extends Fragment {
 
     public void checkAnswer() {
         if (selectedOptionByUser.equals(correctCountryName)) {
-            mQuizModel.score++;
+            mQuizModel.incrementScore();
         }
     }
 
@@ -259,8 +253,12 @@ public class Fragment_Quiz extends Fragment {
     public void revealAnswer() {
         for (AppCompatButton button : buttons) {
             if (button.getText().toString().equals(correctCountryName)) {
-                button.setBackgroundColor(Color.GREEN);
-                button.setTextColor(Color.parseColor("#000000"));
+                button.setBackgroundResource(R.drawable.round_back_green);
+                button.setTextColor(Color.parseColor("#ffffff"));
+            }
+            else {
+                button.setBackgroundResource(R.drawable.round_back_red);
+                button.setTextColor(Color.parseColor("#ffffff"));
             }
         }
     }

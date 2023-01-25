@@ -57,7 +57,7 @@ public class Fragment_Snake extends Fragment implements SurfaceHolder.Callback{
     // La couleur du serpent
     private static final int snakeColor = Color.GREEN;
 
-    // La vitesse du serpent (entre 1 et 1000)
+    // La vitesse du serpent (entre 1 et 800)
     private static final int snakeSpeed = 800;
 
     // Les position x et y
@@ -211,10 +211,8 @@ public class Fragment_Snake extends Fragment implements SurfaceHolder.Callback{
             randomYPosition = randomYPosition + 1;
         }
 
-
         positionX = (randomXPosition * pointSize) + pointSize;
         positionY = (randomYPosition * pointSize) + pointSize;
-
     }
 
 // -----------------------------------------------------------------------------------------------

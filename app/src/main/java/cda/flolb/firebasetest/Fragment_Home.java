@@ -22,7 +22,6 @@ public class Fragment_Home extends Fragment  {
 
         //TODO : Afficher Bonjour + nom de l'utilisateur
 
-
         displayScore();
         return view;
     }
@@ -31,7 +30,7 @@ public class Fragment_Home extends Fragment  {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             int score = bundle.getInt("score");
-            rightAnswer.setText("Votre score est : " + score);
+            rightAnswer.setText("Votre score est de : " + score + " / 6");
         }
     }
 }

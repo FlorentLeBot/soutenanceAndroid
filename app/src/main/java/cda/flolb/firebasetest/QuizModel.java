@@ -6,7 +6,7 @@ import java.util.List;
 
 public class QuizModel {
     public static final String API_URL = "https://restcountries.com/v3/";
-    public static final int TIME_LIMIT = 30000; // 30 seconds
+    public static final int TIME_LIMIT = 30000;
 
     public int score = 0;
     public List<Country> randomCountries;
