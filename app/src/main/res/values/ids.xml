@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="flag_image_view" type="id" />
+    <item name="answer_1_button" type="id" />
+    <item name="answer_2_button" type="id" />
+    <item name="answer_3_button" type="id" />
+    <item name="answer_4_button" type="id" />
+</resources>

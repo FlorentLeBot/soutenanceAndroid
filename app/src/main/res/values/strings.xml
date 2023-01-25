@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">FirebaseTest</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fragment_home">Fragment_Home</string>
+    <string name="fragmentSnake">Fragment_Snake</string>
+    <string name="flag_image_description" />
+    <string name="flag_image" />
+    <string name="restart" />
+    <string name="home" />
+    <string name="result" />
+    <string name="score" />
+</resources>
+
+

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation   xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/home">
+    <fragment
+        android:id="@+id/home"
+        android:name="cda.flolb.firebasetest.Fragment_Home"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment__home">
+        <action
+            android:id="@+id/action_home_to_snack"
+            app:destination="@id/snake" />
+        <action
+            android:id="@+id/action_home_to_quiz"
+            app:destination="@id/quiz" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/snake"
+        android:name="cda.flolb.firebasetest.Fragment_Snake"
+        android:label="fragment_snack"
+        tools:layout="@layout/fragment__snake" />
+
+    <fragment
+        android:id="@+id/quiz"
+        android:name="cda.flolb.firebasetest.Fragment_Snake"
+        android:label="fragment_snake"
+        tools:layout="@layout/fragment__quiz" />
+</navigation>
