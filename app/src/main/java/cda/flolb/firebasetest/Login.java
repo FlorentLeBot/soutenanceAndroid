@@ -32,6 +32,7 @@ public class Login extends AppCompatActivity {
      */
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://fir-project-a4f02-default-rtdb.firebaseio.com/");
+    public static String phoneNo;
 
     /**
      * Méthode appelée lorsque l'activité est créée. Elle définit le contenu de l'affichage à partir d'un fichier XML (activity_login)
@@ -82,6 +83,8 @@ public class Login extends AppCompatActivity {
                      * Sinon, un message d'erreur est affiché.
                      */
 
+                    phoneNo = phoneValue;
+
                     databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -91,8 +94,6 @@ public class Login extends AppCompatActivity {
 
                                 final String getPassword = snapshot.child(phoneValue).child("password").getValue(String.class);
 
-                                //TODO : Vérifier le mot de passe
-                                // On vérifie que le mot de passe est correct
                                 if (getPassword.equals(passwordValue)) {
                                     Toast.makeText(Login.this, "Connexion réussie", Toast.LENGTH_SHORT).show();
 
@@ -115,6 +116,7 @@ public class Login extends AppCompatActivity {
                         // Méthode appelée en cas d'erreur
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(Login.this, "Erreur de connexion", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

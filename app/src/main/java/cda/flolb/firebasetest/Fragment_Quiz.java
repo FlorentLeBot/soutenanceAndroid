@@ -48,6 +48,7 @@ public class Fragment_Quiz extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment__quiz, container, false);
 
+        // On récupère les éléments de la vue
         mQuizModel = new QuizModel();
 
         flagImageView = view.findViewById(R.id.flag_image_view);
@@ -66,6 +67,7 @@ public class Fragment_Quiz extends Fragment {
 
         timerTextView = view.findViewById(R.id.timer);
 
+        // On récupère les données de l'API
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(QuizModel.API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -73,81 +75,115 @@ public class Fragment_Quiz extends Fragment {
 
         RestCountriesApi restCountriesApi = retrofit.create(RestCountriesApi.class);
 
-        restCountriesApi.getCountryInfo().enqueue(new Callback<List<Country>>() {
-            @Override
-            public void onResponse(Call<List<Country>> call, Response<List<Country>> response) {
-                if (response.isSuccessful()) {
-                    List<Country> countries = response.body();
-                    Collections.shuffle(countries);
-                    mQuizModel.randomCountries = countries.subList(0, 6);
-                    setQuestion();
-                    String flagUrl = mQuizModel.randomCountries.get(currentQuestion).getFlags().get(1);
-                    Glide.with(getContext()).load(flagUrl).into(flagImageView);
-                    nextQuestionBtn.setVisibility(View.INVISIBLE);
+        try {
+            restCountriesApi.getCountryInfo().enqueue(new Callback<List<Country>>() {
+                @Override
+                public void onResponse(Call<List<Country>> call, Response<List<Country>> response) {
+                    // Si la réponse est bonne
+                    if (response.isSuccessful()) {
+                        // On crée une liste de pays
+                        List<Country> countries = response.body();
+                        // On mélange la liste
+                        Collections.shuffle(countries);
+                        // On récupère les 6 premiers pays (subList() : permet de récupérer une partie d'une liste)
+                        mQuizModel.randomCountries = countries.subList(0, 6);
+                        // On commence le quiz
+                        setQuestion();
+                        String flagUrl = mQuizModel.randomCountries.get(currentQuestion).getFlags().get(1);
+                        Glide.with(getContext()).load(flagUrl).into(flagImageView);
+                        // On rend le bouton "Suivant" invisible
+                        nextQuestionBtn.setVisibility(View.INVISIBLE);
 
-                    for (AppCompatButton button : buttons) {
-                        button.setOnClickListener(new View.OnClickListener() {
+                        // Quand on clique sur un bouton de réponse
+                        for (AppCompatButton button : buttons) {
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // On récupère le texte du bouton
+                                    selectedOptionByUser = button.getText().toString();
+                                    // On vérifie si la réponse est correcte
+                                    checkAnswer();
+                                    // On révèle la bonne réponse
+                                    revealAnswer();
+                                    // On rend le bouton "Suivant" visible
+                                    nextQuestionBtn.setVisibility(View.VISIBLE);
+                                }
+                            });
+                        }
+
+                        // Quand on clique sur le bouton "Suivant"
+                        nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                selectedOptionByUser = button.getText().toString();
-                                checkAnswer();
-                                revealAnswer();
-                                nextQuestionBtn.setVisibility(View.VISIBLE);
+                                // On passe à la question suivante
+                                nextQuestion();
                             }
                         });
+                    } else {
+                        Toast.makeText(getContext(), "Une erreur s'est produite lors de la récupération des données.", Toast.LENGTH_SHORT).show();
                     }
-                    nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            nextQuestion();
-                        }
-                    });
-                } else {
-                    Toast.makeText(getContext(), "Une erreur s'est produite lors de la récupération des données.", Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<Country>> call, Throwable t) {
-                Toast.makeText(getContext(), "Error getting data", Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                // onFailure : permet de gérer les erreurs
+                public void onFailure(Call<List<Country>> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error getting data", Toast.LENGTH_SHORT).show();
+                }
+
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return view;
     }
 
     //----------------------------------------------------------------------------------------------
 
     private void setQuestion() {
+        // Démarrer le timer
         startTimer();
+        // Récupérer le nom du pays correct
         correctCountryName = mQuizModel.randomCountries.get(currentQuestion).getTranslations().getFra().getCommon();
-        List<String> capitalNames = new ArrayList<>();
+        // Créer une liste pour stocker les noms des pays
+        List<String> countriesNames = new ArrayList<>();
+        // Ajouter tous les noms des pays dans la liste
         for (Country country : mQuizModel.randomCountries) {
-            capitalNames.add(country.getTranslations().getFra().getCommon());
+            countriesNames.add(country.getTranslations().getFra().getCommon());
         }
-        Collections.shuffle(capitalNames);
+        // Mélanger les noms des pays
+        Collections.shuffle(countriesNames);
+        // Ajouter les noms des pays mélangés aux boutons
         for (int i = 0; i < 6; i++) {
-            buttons[i].setText(capitalNames.get(i));
+            buttons[i].setText(countriesNames.get(i));
         }
+        // Mettre à jour le texte de la question
         questions.setText("Question " + (currentQuestion + 1) + "/" + totalQuestions);
     }
+
 
     //----------------------------------------------------------------------------------------------
 
     private void startTimer() {
+        // Vérifier si le timer n'est pas déjà en cours d'exécution
         if (!timerRunning) {
+            // Initialiser un nouveau timer avec la durée restante (timeLeftInMillis) et une intervalle de 1s
             timer = new CountDownTimer(timeLeftInMillis, 1000) {
                 @Override
+                // Mettre à jour le timer à chaque tick
                 public void onTick(long millisUntilFinished) {
                     timeLeftInMillis = millisUntilFinished;
                     updateTimerText();
                 }
 
                 @Override
+                // Gérer la fin du timer
                 public void onFinish() {
                     revealAnswer();
                     nextQuestionBtn.setVisibility(View.VISIBLE);
                 }
             }.start();
+            // Mettre à jour l'état du timer
             timerRunning = true;
         }
     }
@@ -155,19 +191,25 @@ public class Fragment_Quiz extends Fragment {
     //----------------------------------------------------------------------------------------------
 
     private void updateTimerText() {
+        // Récupérer le temps restant en minutes et secondes
         int minutes = (int) (timeLeftInMillis / 1000) / 60;
         int seconds = (int) (timeLeftInMillis / 1000) % 60;
+        // Formater le temps restant pour l'affichage (ex : 01:00)
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        // Afficher le temps restant dans le TextView
         timerTextView.setText(timeLeftFormatted);
     }
-
 
     //----------------------------------------------------------------------------------------------
 
     private void resetTimer() {
+        // Annuler le timer en cours
         timer.cancel();
+        // Réinitialiser la durée restante
         timeLeftInMillis = 30000;
+        // Mettre à jour l'affichage du temps restant
         updateTimerText();
+        // Créer un nouveau timer avec la durée réinitialisée
         timer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -178,20 +220,28 @@ public class Fragment_Quiz extends Fragment {
             @Override
             public void onFinish() {
                 timerRunning = false;
+                // Afficher un message Toast lorsque le temps est écoulé
                 Toast.makeText(getContext(), "Temps écoulé!", Toast.LENGTH_SHORT).show();
+                // Afficher le bouton suivant
                 nextQuestionBtn.setVisibility(View.VISIBLE);
+                // Révéler la réponse
                 revealAnswer();
             }
         }.start();
         timerRunning = true;
     }
 
+
     //----------------------------------------------------------------------------------------------
 
     private void resetButtons() {
+        // Pour chaque bouton
         for (AppCompatButton button : buttons) {
+            // Activer le bouton
             button.setEnabled(true);
+            // Réinitialiser la couleur de fond en blanc
             button.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            // Réinitialiser la couleur du texte en noir
             button.setTextColor(Color.parseColor("#000000"));
         }
     }
@@ -199,16 +249,25 @@ public class Fragment_Quiz extends Fragment {
     //----------------------------------------------------------------------------------------------
 
     private void nextQuestion() {
+        // Incrémenter le numéro de question courante
         currentQuestion++;
+        // Si il reste des questions
         if (currentQuestion < totalQuestions) {
+            // Réinitialiser les boutons
             resetButtons();
+            // Réinitialiser le timer
             resetTimer();
+            // Cacher le bouton "question suivante"
             nextQuestionBtn.setVisibility(View.INVISIBLE);
+            // Mettre à jour le texte de la question
             questions.setText("Question :" + (currentQuestion + 1) + "/" + totalQuestions);
+            // Charger l'image du drapeau
             String flagUrl = mQuizModel.randomCountries.get(currentQuestion).getFlags().get(1);
             Glide.with(getContext()).load(flagUrl).into(flagImageView);
+            // Mettre à jour les boutons avec les nouvelles réponses
             updateButtons();
         } else {
+            // Finir le quiz
             finishQuiz();
         }
     }
@@ -216,12 +275,17 @@ public class Fragment_Quiz extends Fragment {
     //----------------------------------------------------------------------------------------------
 
     private void updateButtons() {
+        // Récupérer le nom du pays correct
         correctCountryName = mQuizModel.randomCountries.get(currentQuestion).getTranslations().getFra().getCommon();
+        // Créer une liste pour stocker les noms des pays
         List<String> countryNames = new ArrayList<>();
+        // Ajouter tous les noms des pays dans la liste
         for (Country country : mQuizModel.randomCountries) {
             countryNames.add(country.getTranslations().getFra().getCommon());
         }
+        // Mélanger les noms des pays
         Collections.shuffle(countryNames);
+        // Ajouter les noms des pays mélangés aux boutons
         for (int i = 0; i < buttons.length; i++) {
             buttons[i].setText(countryNames.get(i));
         }
@@ -243,7 +307,9 @@ public class Fragment_Quiz extends Fragment {
     //----------------------------------------------------------------------------------------------
 
     public void checkAnswer() {
+        // Si le bouton cliqué contient le nom du pays correct
         if (selectedOptionByUser.equals(correctCountryName)) {
+            // On incrémente le score
             mQuizModel.incrementScore();
         }
     }
@@ -251,12 +317,15 @@ public class Fragment_Quiz extends Fragment {
     //----------------------------------------------------------------------------------------------
 
     public void revealAnswer() {
+        // Parcourir tous les boutons de la liste "buttons"
         for (AppCompatButton button : buttons) {
+            // Vérifier si le texte associé au bouton correspond au nom du pays correct
             if (button.getText().toString().equals(correctCountryName)) {
+                // Mettre le bouton en fond vert et le texte en blanc
                 button.setBackgroundResource(R.drawable.round_back_green);
                 button.setTextColor(Color.parseColor("#ffffff"));
-            }
-            else {
+            } else {
+                // Mettre le bouton en fond rouge et le texte en blanc
                 button.setBackgroundResource(R.drawable.round_back_red);
                 button.setTextColor(Color.parseColor("#ffffff"));
             }

@@ -8,6 +8,7 @@
 
 package cda.flolb.firebasetest;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -124,12 +125,16 @@ public class Register extends AppCompatActivity {
                                 Toast.makeText(Register.this, "Inscription réussie", Toast.LENGTH_SHORT).show();
 
                                 // Retourne à l'activité de connexion
+
                                 finish();
+                                startActivity(new Intent(Register.this, Login.class));
                             }
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
+                            // Affiche un message d'erreur
+                            Toast.makeText(Register.this, "Erreur de connexion", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
