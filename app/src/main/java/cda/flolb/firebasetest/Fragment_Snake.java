@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -357,7 +358,7 @@ public class Fragment_Snake extends Fragment implements SurfaceHolder.Callback{
         return gameOver;
     }
 
-// -----------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
     private Paint createPointColor() {
 
@@ -372,6 +373,34 @@ public class Fragment_Snake extends Fragment implements SurfaceHolder.Callback{
             return pointColor;
         }
         return pointColor;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // On arrête le timer
+        timer.cancel();
+        // On arrête le mouvement du serpent
+        movingPosition = "";
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // On sort du fragment en cours quand on clique sur un autre fragment
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        /*
+        utilisé pour supprimer une valeur stockée
+        sous la clé "snake" dans les "préférences partagées" (shared preferences)
+        avec le nom "PREFERENCE". Le mode privé (MODE_PRIVATE) est spécifié pour garantir que
+        les préférences ne peuvent être accessibles qu'à l'application elle-même. La méthode "apply()"
+        est appelée pour appliquer la modification de manière asynchrone.
+         */
+        getContext().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).edit().remove("snake").apply();
     }
 
 }

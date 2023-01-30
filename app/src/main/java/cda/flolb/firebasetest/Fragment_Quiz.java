@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
@@ -331,4 +333,58 @@ public class Fragment_Quiz extends Fragment {
             }
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+
+    // On met en pause le timer lorsque l'utilisateur quitte l'application
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (timerRunning) {
+            timer.cancel();
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    // On relance le timer lorsque l'utilisateur revient dans l'application
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (timerRunning) {
+            timer.start();
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    // On sauvegarde le score lorsque l'utilisateur quitte l'application
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("score", mQuizModel.score);
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    // On récupère le score lorsque l'utilisateur revient dans l'application
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            mQuizModel.score = savedInstanceState.getInt("score");
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    // On détruit le timer lorsque l'utilisateur quitte l'application
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (timer != null) {
+            timer.cancel();
+        }
+    }
+
 }
