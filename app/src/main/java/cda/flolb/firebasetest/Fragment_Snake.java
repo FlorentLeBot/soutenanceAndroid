@@ -1,5 +1,7 @@
 package cda.flolb.firebasetest;
 
+import static android.media.AudioManager.*;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatImageButton;
@@ -13,6 +15,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -72,6 +77,9 @@ public class Fragment_Snake extends Fragment implements SurfaceHolder.Callback{
 
     // La couleur d'un point
     private Paint pointColor = null;
+
+    // Le son
+    private MediaPlayer mediaPlayer = null;
 
 
 // -----------------------------------------------------------------------------------------------
@@ -319,6 +327,9 @@ public class Fragment_Snake extends Fragment implements SurfaceHolder.Callback{
         //On crée un nouveau serpent
         SnakePoints snakePoints = new SnakePoints(snakePointsList.get(snakePointsList.size() - 1).getPositionX(), snakePointsList.get(snakePointsList.size() - 1).getPositionY());
 
+        // On ajoute le son quand le serpent mange un point
+        playSound();
+
         // On ajoute un point au serpent
         snakePointsList.add(snakePoints);
 
@@ -403,4 +414,29 @@ public class Fragment_Snake extends Fragment implements SurfaceHolder.Callback{
         getContext().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).edit().remove("snake").apply();
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // On sort du fragment en cours quand on clique sur le bouton retour du téléphone
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // On arrête le timer
+        timer.cancel();
+        // On arrête le mouvement du serpent
+        movingPosition = "";
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // On ajoute un son quand le serpent mange la pomme avec la classe MediaPlayer
+
+    private void playSound() {
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(getContext(), R.raw.son);
+            mediaPlayer.start();
+        } else {
+            mediaPlayer.start();
+        }
+    }
 }
